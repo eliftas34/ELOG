@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakkımda | Kişisel Blog</title>
+    <link rel="stylesheet" href="/static/stil.css">
+    <style>
+        /* Hakkımda bölümüne arka plan resmi ekleme */
+        .about {
+            background-image: url('/static/hakkimda.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        /* Beyaz arka planla okunabilir metin alanı */
+        .about .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">ELOG</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_anasayfa')">Anasayfa</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_hakkimda')">Hakkımda</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_blog')">Blog</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/iletisim')">İletişim</a></li>
+                <li class="login"><a href="/">Giriş Yap</a></li>
+                <li class="logout" style="display: none;"><a href="#" id="logoutButton">Çıkış Yap</a></li>
+            </ul>
+            
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about">
+            <div class="container">
+                <h1>Hakkımda</h1>
+                <p>Merhaba! Benim adım Elif. Bu blogda, hayatım boyunca öğrendiğim, deneyimlediğim ve düşündüğüm şeyleri paylaşıyorum. Yazılarımda genellikle ilgi alanlarım, gezip gördüğüm yerler, okuduğum kitaplar ve uzmanlık alanlarım gibi konulara değiniyorum.</p>
+                <p>Yazmak benim için bir tutku ve bu platformu kurma amacım, bu tutkumu paylaşmak ve okuyucularla etkileşimde bulunmaktır. Umarım yazılarımı keyifle okur ve faydalı bulursunuz.</p>
+                <p>İlgi alanlarım ve hobilerim arasında kitap okumak, gezmek, yeni yemekler denemek, müzik dinlemek ve spor aktiviteleri yer almaktadır. Daha fazla bilgi için blog yazılarımı okumaya devam edebilir ve benimle iletişime geçebilirsiniz.</p>
+                <p>Sevgiler,</p>
+                <p>Elif Taş</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Kişisel Blog. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        // Javascript ile Menü toggle işlemleri
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+    
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+    
+        // Kullanıcı girişi kontrolü
+        const isLoggedIn = true; 
+    
+        const logoutButton = document.getElementById('logoutButton');
+        if (isLoggedIn) {
+            document.body.classList.add('logged-in');
+            document.querySelector('.login').style.display = 'none';
+            document.querySelector('.logout').style.display = 'inline-block';
+        }
+    
+        // Çıkış yapma işlemi
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/'; // Çıkış yap butonuna tıklandığında giriş sayfasına yönlendir
+        });
+
+        // current_page değişkenini güncellemek için sunucuya POST isteği gönderme
+        function updateCurrentPage(page) {
+            fetch('/update_current_page', {
+                method: 'POST',
+                body: JSON.stringify({ current_page: page }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                // Kullanıcıyı yeni sayfaya yönlendir
+                window.location.href = page;
+            }).catch((error) => {
+                console.error('Error updating current page:', error);
+            });
+        }
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Kişisel Blog</title>
+    <link rel="stylesheet" href="/static/stil.css">
+    <style>
+        body {
+            background-image: url('/static/blog.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        /* Blog yazılarının özellikleri */
+        .container {
+            opacity: 0.7; 
+            padding: 20px;
+            border-radius: 10px;
+        }
+ 
+
+    </style>
+   
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">ELOG</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="updateCurrentPage('/anasayfa')">Anasayfa</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/hakkimda')">Hakkımda</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/blog')">Blog</a></li>
+                <li class="login"><a href="/">Giriş Yap</a></li>
+                <li class="logout" style="display: none;"><a href="#" id="logoutButton">Çıkış Yap</a></li>
+            </ul>
+            
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog">
+            <div class="container">
+                <!-- Blog yazıları -->
+                {% for post in posts %}
+                <article class="post">
+                    <h2>{{ post['baslik'] }}</h2>
+                    <p>{{ post['icerik'] }}</p>
+                    <div class="post-actions">
+                        <a href="{{ url_for('duzenle', id=post['id']) }}"><button class="edit">Düzenle</button></a>
+                        <form action="{{ url_for('sil', id=post['id']) }}" method="post" style="display: inline;">
+                            <button type="submit" class="delete">Sil</button>
+                        </form>
+                        <span>{{ post['like_count'] }} Beğeni</span>
+                    </div>
+                    <div class="comments">
+                        <h3>Yorumlar</h3>
+                        {% for comment in post['comments'] %}
+                        <div class="comment">
+                            <p><strong>{{ comment['kullanici_adi'] }}:</strong> {{ comment['yorum'] }}</p>
+                            <p><small>{{ comment['tarih'] }}</small></p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Kişisel Blog. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <button id="addPostButton" style="position: fixed; bottom: 20px; right: 20px; background-color: #4CAF50;">Yazı Ekle</button>
+
+    <script>
+        // Javascript ile Menü toggle işlemleri
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+    
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+
+        // Ekle butonuna tıklanınca /yazi-ekle sayfasına yönlendirme
+        const addPostButton = document.getElementById('addPostButton');
+        addPostButton.addEventListener('click', () => {
+            window.location.href = '/yazi-ekle';
+        });
+
+        // Kullanıcı girişi kontrolü
+        const isLoggedIn = true; 
+    
+        const logoutButton = document.getElementById('logoutButton');
+        if (isLoggedIn) {
+            document.body.classList.add('logged-in');
+            document.querySelector('.login').style.display = 'none';
+            document.querySelector('.logout').style.display = 'inline-block';
+            document.querySelectorAll('.post-actions .edit').forEach(button => button.style.display = 'inline-block');
+            document.querySelectorAll('.post-actions .delete').forEach(button => button.style.display = 'inline-block');
+        }
+    
+        // Çıkış yapma işlemi
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
+         // current_page değişkenini güncellemek için sunucuya POST isteği gönderme
+        function updateCurrentPage(page) {
+            fetch('/update_current_page', {
+                method: 'POST',
+                body: JSON.stringify({ current_page: page }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                // Kullanıcıyı yeni sayfaya yönlendir
+                window.location.href = page;
+            }).catch((error) => {
+                console.error('Error updating current page:', error);
+            });
+        }
+    </script>
+</body>
+</html>

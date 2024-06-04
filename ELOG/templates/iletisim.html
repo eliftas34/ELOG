@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim | Kişisel Blog</title>
+    <link rel="stylesheet" href="/static/stil.css">
+    <style>
+        /* İletişim bölümüne arka plan resmi ekleme */
+        .contact {
+            background-image: url('/static/iletisim.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        /* Beyaz arka planla okunabilir form alanı */
+        .contact .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: black;
+        }
+
+        .contact label, .contact input, .contact textarea, .contact button {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">ELOG</a>
+            </div>
+            <ul class="nav-links">
+                <!-- Kullanıcı admin ise admin sayfalarına, değilse üye sayfalarına yönlendirme -->
+                <li><a href="{% if is_admin %}/anasayfa{% else %}/uye_ol_anasayfa{% endif %}">Anasayfa</a></li>
+                <li><a href="{% if is_admin %}/hakkimda{% else %}/uye_ol_hakkimda{% endif %}">Hakkımda</a></li>
+                <li><a href="{% if is_admin %}/blog{% else %}/uye_ol_blog{% endif %}">Blog</a></li>
+                <li><a href="/iletisim">İletişim</a></li>
+                <li class="login"><a href="/">Giriş Yap</a></li>
+                <li class="logout" style="display: none;"><a href="#" id="logoutButton">Çıkış Yap</a></li>
+            </ul>
+            
+            <!-- Menü toggle butonu -->
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact">
+            <div class="container">
+                <h1>İletişim</h1>
+                <form id="contactForm" action="/iletisim" method="POST">
+                    <div class="form-group">
+                        <label for="name">Adınız:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-posta Adresiniz:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Konu:</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mesajınız:</label>
+                        <textarea id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Gönder</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Kişisel Blog. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        // Javascript ile Menü toggle işlemleri
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+    
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+    
+        // Kullanıcı girişi kontrolü
+        const isLoggedIn = true; 
+    
+        const logoutButton = document.getElementById('logoutButton');
+        if (isLoggedIn) {
+            document.body.classList.add('logged-in');
+            document.querySelector('.login').style.display = 'none';
+            document.querySelector('.logout').style.display = 'inline-block';
+            document.querySelectorAll('.post-actions .edit').forEach(button => button.style.display = 'inline-block');
+            document.querySelectorAll('.post-actions .delete').forEach(button => button.style.display = 'inline-block');
+        }
+    
+        // Çıkış yapma işlemi
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/'; // Çıkış yap butonuna tıklandığında giriş sayfasına yönlendir
+        });
+    </script>
+    
+</body>
+</html>

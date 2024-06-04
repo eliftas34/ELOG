@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anasayfa | Kişisel Blog</title>
+    <link rel="stylesheet" href="/static/stil.css">
+    <style>
+        body {
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden;
+        }
+
+        /* Hoşgeldin yazısı divinin ayarları */
+        .hero {
+            position: relative; 
+            color: #fff; 
+            padding: 100px 0; 
+            background-color: black;
+        }
+
+        /* Hoşgeldin yazısı ayarları */
+        .hero h1,
+        .hero p {
+            color: white; 
+        }
+
+        /* Slidebar ayarları */
+        .slidebar {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 1500%; 
+            height: 100%; 
+            animation: slide 120s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { left: 0; } 
+            100% { left: -1400%; } 
+        }
+
+        /* Slidebar görselleri stil ayarları */
+        .slidebar img {
+            width: 100vw; 
+            height: 100vh; 
+            object-fit: cover; 
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">ELOG</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="updateCurrentPage('/anasayfa')">Anasayfa</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/hakkimda')">Hakkımda</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/blog')">Blog</a></li>
+                <li class="login"><a href="/">Giriş Yap</a></li>
+                <li class="logout" style="display: none;"><a href="#" id="logoutButton">Çıkış Yap</a></li>
+            </ul>
+            
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+    
+
+    <main>
+        <section class="hero">
+            <div class="slidebar">
+                <img src="/static/resim1.png" alt="Resim 1">
+                <img src="/static/resim2.png" alt="Resim 2">
+                <img src="/static/resim3.png" alt="Resim 3">
+                <img src="/static/resim4.png" alt="Resim 4">
+                <img src="/static/resim5.png" alt="Resim 5">
+                <img src="/static/resim6.png" alt="Resim 6">
+                <img src="/static/resim7.png" alt="Resim 7">
+                <img src="/static/resim8.png" alt="Resim 8">
+                <img src="/static/resim9.png" alt="Resim 9">
+                <img src="/static/resim10.png" alt="Resim 10">
+                <img src="/static/resim11.png" alt="Resim 11">
+                <img src="/static/resim12.png" alt="Resim 12">
+                <img src="/static/resim13.png" alt="Resim 13">
+                <img src="/static/resim14.png" alt="Resim 14">
+            </div>
+            <h1>Hoş Geldiniz</h1>
+            <p>Kişisel bloguma hoş geldiniz! Burada kişisel yazılarımı ve deneyimlerimi paylaşacağım.</p>
+        </section>
+        
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Kişisel Blog. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        // Javascript ile Menü toggle işlemleri
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+    
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+    
+        // Kullanıcı girişi kontrolü
+        const isLoggedIn = true; 
+    
+        const logoutButton = document.getElementById('logoutButton');
+        if (isLoggedIn) {
+            document.body.classList.add('logged-in');
+            document.querySelector('.login').style.display = 'none';
+            document.querySelector('.logout').style.display = 'inline-block';
+            document.querySelectorAll('.post-actions .edit').forEach(button => button.style.display = 'inline-block');
+            document.querySelectorAll('.post-actions .delete').forEach(button => button.style.display = 'inline-block');
+        }
+    
+        // Çıkış yapma işlemi
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/'; // Çıkış yap butonuna tıklandığında giriş sayfasına yönlendirme
+        });
+
+        // current_page değişkenini güncellemek için sunucuya POST isteği gönderme
+        function updateCurrentPage(page) {
+        fetch('/update_current_page', {
+            method: 'POST',
+            body: JSON.stringify({ current_page: page }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            // Kullanıcıyı yeni sayfaya yönlendirme
+            window.location.href = page;
+        }).catch((error) => {
+            console.error('Error updating current page:', error);
+        });
+    }
+    </script>
+    
+</body>
+</html>

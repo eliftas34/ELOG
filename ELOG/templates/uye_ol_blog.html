@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Kişisel Blog</title>
+    <link rel="stylesheet" href="/static/stil.css">
+    <style>
+        body {
+            background-image: url('/static/blog.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        /*Blog yazıları stil ayarları */
+        .container {
+            opacity: 0.7; 
+            padding: 20px;
+            border-radius: 10px;
+        }
+ 
+
+    </style>
+   
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">ELOG</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_anasayfa')">Anasayfa</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_hakkimda')">Hakkımda</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/uye_ol_blog')">Blog</a></li>
+                <li><a href="#" onclick="updateCurrentPage('/iletisim')">İletişim</a></li>
+                <li class="login"><a href="/">Giriş Yap</a></li>
+                <li class="logout" style="display: none;"><a href="#" id="logoutButton">Çıkış Yap</a></li>
+            </ul>
+            
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog">
+            <div class="container">
+                <!-- Blog yazıları -->
+                {% for post in posts %}
+                <article class="post">
+                    <h2>{{ post['baslik'] }}</h2>
+                    <p>{{ post['icerik'] }}</p>
+                    <button onclick="begen({{ post['id'] }})">Beğen</button>
+                    <form action="/yorum_yap/{{ post['id'] }}" method="post">
+                        <textarea name="yorum" placeholder="Yorum yaz..."></textarea>
+                        <button type="submit">Gönder</button>
+                    </form>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Kişisel Blog. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        // Menü toggle işlemleri
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+
+        // Kullanıcı girişi kontrolü
+        const isLoggedIn = true;
+
+        const logoutButton = document.getElementById('logoutButton');
+        if (isLoggedIn) {
+            document.body.classList.add('logged-in');
+            document.querySelector('.login').style.display = 'none';
+            document.querySelector('.logout').style.display = 'inline-block';
+        }
+
+         // Çıkış yapma işlemi
+        logoutButton.addEventListener('click', () => {
+            window.location.href = '/logout';
+        });
+
+         // current_page değişkenini güncellemek için sunucuya POST isteği gönderme
+        function updateCurrentPage(page) {
+            fetch('/update_current_page', {
+                method: 'POST',
+                body: JSON.stringify({ current_page: page }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                window.location.href = page;
+            }).catch((error) => {
+                console.error('Error updating current page:', error);
+            });
+        }
+
+        // Beğenme işlemi
+        function begen(blog_id) {
+            fetch(`/begen/${blog_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert("Beğendiniz!");
+                } else {
+                    alert(data.message || "Beğenme işlemi başarısız!");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
